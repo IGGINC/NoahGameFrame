@@ -13,6 +13,7 @@
 #include "Dependencies/RapidXML/rapidxml_utils.hpp"
 #include "NFComm/NFPluginModule/NFIPlugin.h"
 #include "NFComm/NFPluginModule/NFPlatform.h"
+#include <io.h>
 
 #if NF_PLATFORM == NF_PLATFORM_WIN
 #pragma comment( lib, "ws2_32.lib" )
@@ -48,6 +49,8 @@ NFCPluginManager::NFCPluginManager() : NFIPluginManager()
 
    mstrConfigPath = "";
    mstrConfigName = "Plugin.xml";
+
+   mGetFileDataFunctor = nullptr;
 }
 
 NFCPluginManager::~NFCPluginManager()
@@ -81,9 +84,18 @@ inline bool NFCPluginManager::Init()
 
 bool NFCPluginManager::LoadPluginConfig()
 {
-    rapidxml::file<> fdoc(mstrConfigName.c_str());
+	unsigned long nSize;
+	char *pFileData = (char*)GetFileData(mstrConfigName.c_str(), nSize);
+	if(!pFileData)
+		return false;
+
+	char *pData = new char[nSize + 1];
+	strncpy(pData, pFileData, nSize);
+	pData[nSize] = 0;
+	free(pFileData);
+
     rapidxml::xml_document<>  doc;
-    doc.parse<0>(fdoc.data());
+    doc.parse<0>(pData);
 
     rapidxml::xml_node<>* pRoot = doc.first_node();
     rapidxml::xml_node<>* pAppNameNode = pRoot->first_node(mstrAppName.c_str());
@@ -96,9 +108,8 @@ bool NFCPluginManager::LoadPluginConfig()
     for (rapidxml::xml_node<>* pPluginNode = pAppNameNode->first_node("Plugin"); pPluginNode; pPluginNode = pPluginNode->next_sibling("Plugin"))
     {
         const char* strPluginName = pPluginNode->first_attribute("Name")->value();
-
-        mPluginNameMap.insert(PluginNameMap::value_type(strPluginName, true));
-
+		
+        AddPlugin(strPluginName);
     }
 
 /*
@@ -136,6 +147,13 @@ bool NFCPluginManager::LoadPluginConfig()
     }
 
     mstrConfigPath = pPluginConfigPathNode->first_attribute("Name")->value();
+	
+    //////////////////////////////////////////////////////////////////////////
+    if (NULL != pData)
+    {
+        delete []pData;
+    }
+    //////////////////////////////////////////////////////////////////////////
 
     return true;
 }
@@ -201,6 +219,11 @@ NFIPlugin* NFCPluginManager::FindPlugin(const std::string& strPluginName)
     }
 
     return NULL;
+}
+
+void NFCPluginManager::AddPlugin(const std::string& strPluginName)
+{
+	mPluginNameMap.insert(PluginNameMap::value_type(strPluginName, true));
 }
 
 bool NFCPluginManager::Execute()
@@ -282,6 +305,45 @@ const std::string & NFCPluginManager::GetLogConfigName() const
 void NFCPluginManager::SetLogConfigName(const std::string & strName)
 {
 	mstrLogConfigName = strName;
+}
+
+void NFCPluginManager::SetGetFileDataFunctor(GET_FILEDATA_FUNCTOR fun)
+{
+	mGetFileDataFunctor = fun;
+}
+
+unsigned char *NFCPluginManager::GetFileData(const char *pFileName, unsigned long &nSize)
+{
+	if(mGetFileDataFunctor)
+	{
+		return mGetFileDataFunctor(pFileName, nSize);
+	}
+
+	FILE *fp = fopen(pFileName, "rb");
+	if(!fp)
+	{
+		return 0;
+	}
+
+	nSize = filelength(fileno(fp));
+	unsigned char *pData = (unsigned char *)malloc(nSize);
+	fread(pData, nSize, 1, fp);
+	fclose(fp);	
+
+	return pData;
+}
+
+bool NFCPluginManager::GetFileString(const char *pFileName, std::string &strContent)
+{
+	unsigned long nSize;
+	unsigned char *pData = GetFileData(pFileName, nSize);
+	if(!pData)
+		return false;
+
+	strContent.append((char*)pData, nSize);
+
+	free(pData);
+	return true;
 }
 
 void NFCPluginManager::AddModule(const std::string& strModuleName, NFIModule* pModule)

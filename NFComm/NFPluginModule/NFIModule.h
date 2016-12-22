@@ -118,7 +118,7 @@ public:
     std::string strName;
 
 protected:
-	NFIPluginManager* pPluginManager = NULL;
+	NFIPluginManager* pPluginManager;
 
 private:
 

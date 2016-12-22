@@ -51,6 +51,8 @@ public:
 
     virtual void AddModule(const std::string& strModuleName, NFIModule* pModule);
 
+    virtual void AddPlugin(const std::string& strPluginName);
+
     virtual void RemoveModule(const std::string& strModuleName);
 
     virtual NFIModule* FindModule(const std::string& strModuleName);
@@ -76,6 +78,12 @@ public:
 	virtual const std::string& GetLogConfigName() const;
 
 	virtual void SetLogConfigName(const std::string& strName);
+
+	virtual void SetGetFileDataFunctor(GET_FILEDATA_FUNCTOR fun);
+
+	virtual unsigned char *GetFileData(const char *pFileName, unsigned long &nSize);
+
+	virtual bool GetFileString(const char *pFileName, std::string &strContent);
 
 protected:
 	bool LoadPluginConfig();
@@ -106,6 +114,8 @@ private:
     PluginLibMap mPluginLibMap;
     PluginInstanceMap mPluginInstanceMap;
     ModuleInstanceMap mModuleInstanceMap;
+
+	GET_FILEDATA_FUNCTOR mGetFileDataFunctor;
 };
 
 #endif

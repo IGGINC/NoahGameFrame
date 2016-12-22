@@ -274,6 +274,10 @@ template <typename T, typename TD>
 class NFCConsistentHashMapEx : public NFMapEx<T, TD>
 {
 public:
+	 NFCConsistentHashMapEx()
+	{
+		mnWeigh = 0;
+	}
 	virtual void InitHashNodeWeith(const int nWeigh = 500)
 	{
 		mnWeigh = nWeigh;
@@ -361,7 +365,7 @@ public:
 	}
 
 private:
-	int mnWeigh = 0;
+	int mnWeigh;
 	NFCConsistentHash<T> mxConsistentHash;
 };
 #endif

@@ -28,16 +28,16 @@ public:
     }
     void lock()
     {
-        while (flag.test_and_set(std::memory_order_acquire));
+        while (flag.test_and_set(boost::memory_order_acquire));
     }
 
     void unlock()
     {
-        flag.clear(std::memory_order_release);
+        flag.clear(boost::memory_order_release);
     }
 
 protected:
-    mutable std::atomic_flag flag;
+    mutable boost::atomic_flag flag;
 
 private:
     NFLock& operator=(const NFLock& src);

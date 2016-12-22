@@ -54,9 +54,9 @@ typedef void* BUFPTR;
 #include <sstream>
 #include <iostream>
 
-#include "./Dependencies/common/optional.hpp"
-#include "./Dependencies/common/lexical_cast.hpp"
-#include "./Dependencies/common/variant.hpp"
+#include "common/optional.hpp"
+#include "common/lexical_cast.hpp"
+#include "common/variant.hpp"
 
 #ifdef _WIN32
 #include "anet_win32.h"
@@ -119,7 +119,7 @@ namespace redis
     
     std::string host;
     std::string pass;
-    std::uint16_t port;
+    uint16_t port;
     int dbindex;
 
   private:
@@ -291,13 +291,21 @@ namespace redis
     }
     
     std::vector<std::string> lines_;
+#if _MSC_VER < 1800
+    boost::optional<std::string> key_name_;
+#else
     optional<std::string> key_name_;
+#endif
   };
 
   template<typename CONSISTENT_HASHER>
   class base_client;
-
+  
+#if _MSC_VER < 1800
+  typedef boost::variant< std::string, int, std::vector<std::string> > reply_val_t;
+#else
   typedef mapbox::util::variant< std::string, int, std::vector<std::string> > reply_val_t;
+#endif
   typedef std::pair<reply_t, reply_val_t> reply_data_t;
   
   class command
@@ -336,31 +344,54 @@ namespace redis
     const std::string & get_status_code_reply() const
     {
       check_reply_t(status_code_reply);
-      return reply_.second.get<std::string>();
+#if _MSC_VER < 1800
+	  return boost::get<std::string>(reply_.second);
+#else
+	  return reply_.second.get<std::string>();
+#endif;
     }
     
     const std::string & get_error_reply() const
     {
-      check_reply_t(error_reply);
-      return reply_.second.get<std::string>();
+		check_reply_t(error_reply);
+#if _MSC_VER < 1800
+		return boost::get<std::string>(reply_.second);
+#else
+		return reply_.second.get<std::string>();
+#endif;
     }
     
     int get_int_reply() const
     {
       check_reply_t(int_reply);
-      return reply_.second.get<int>();
+		check_reply_t(error_reply);
+#if _MSC_VER < 1800
+		return boost::get<int>(reply_.second);
+#else
+		return reply_.second.get<int>();
+#endif;
     }
     
     const std::string & get_bulk_reply() const
     {
       check_reply_t(bulk_reply);
-      return reply_.second.get<std::string>();
+		check_reply_t(error_reply);
+#if _MSC_VER < 1800
+		return boost::get<std::string>(reply_.second);
+#else
+		return reply_.second.get<std::string>();
+#endif;
     }
     
     const std::vector<std::string> & get_multi_bulk_reply() const
     {
       check_reply_t(multi_bulk_reply);
-      return reply_.second.get< std::vector<std::string> >();
+		check_reply_t(error_reply);
+#if _MSC_VER < 1800
+		return boost::get<std::vector<std::string>>(reply_.second);
+#else
+		return reply_.second.get<std::vector<std::string>>();
+#endif;
     }
   };
 
@@ -627,7 +658,11 @@ namespace redis
   private:
     struct msetex_data
     {
+#if _MSC_VER < 1800
+      boost::optional<makecmd> mset_cmd;
+#else
       optional<makecmd> mset_cmd;
+#endif
       std::string expire_cmds;
       size_t count;
     };
@@ -691,7 +726,11 @@ namespace redis
   private:
     struct connection_keys
     {
-      optional<makecmd> cmd;
+#if _MSC_VER < 1800
+		boost::optional<makecmd> cmd;
+#else
+		optional<makecmd> cmd;
+#endif
 
       /// Gives the position of the value in the original array
       std::vector<size_t> indices;
@@ -1059,9 +1098,9 @@ namespace redis
             string_vector content;
             lrange(old_name, 0, -1, content);
             del(new_name);
-            for( auto val: content)
+			for(auto &val = content.begin(); val != content.end(); ++val)
             {
-              rpush(new_name, val);
+              rpush(new_name, *val);
             }
             break;
           }
@@ -1070,9 +1109,9 @@ namespace redis
             string_set content;
             smembers(old_name, content);
             del(new_name);
-            for(const auto & val: content)
+            for(auto &val = content.begin(); val != content.end(); ++val)
             {
-              sadd(new_name, val);
+              sadd(new_name, *val);
             }
             break;
           }
@@ -2892,18 +2931,18 @@ namespace redis
   //typedef distributed_base_int<std::int8_t>   distributed_int8;
   //typedef distributed_base_int<std::uint8_t>  distributed_uint8;
   
-  typedef distributed_base_int<std::int16_t>  distributed_int16;
-  typedef distributed_base_int<std::uint16_t> distributed_uint16;
+  typedef distributed_base_int<int16_t>  distributed_int16;
+  typedef distributed_base_int<uint16_t> distributed_uint16;
   
-  typedef distributed_base_int<std::int32_t>  distributed_int32;
-  typedef distributed_base_int<std::uint32_t> distributed_uint32;
+  typedef distributed_base_int<int32_t>  distributed_int32;
+  typedef distributed_base_int<uint32_t> distributed_uint32;
   
 #ifndef NF_NO_INT64_T
-  typedef distributed_base_int<std::int64_t>  distributed_longlong;
-  typedef distributed_base_int<std::uint64_t> distributed_ulonglong;
+  typedef distributed_base_int<int64_t>  distributed_longlong;
+  typedef distributed_base_int<uint64_t> distributed_ulonglong;
   
-  typedef distributed_base_int<std::int64_t>  distributed_int64;
-  typedef distributed_base_int<std::uint64_t> distributed_uint64;
+  typedef distributed_base_int<int64_t>  distributed_int64;
+  typedef distributed_base_int<uint64_t> distributed_uint64;
 #endif // NF_NO_INT64_T
   
 #if 0
@@ -2957,7 +2996,11 @@ namespace redis
 
   private:
     distributed_base_int<INT_TYPE> shr_int_;
+#if _MSC_VER < 1800
     boost::optional<INT_TYPE> cur_val_;
+#else
+    optional<INT_TYPE> cur_val_;
+#endif
   };
 
   typedef distributed_base_sequence<std::intmax_t> distributed_sequence;

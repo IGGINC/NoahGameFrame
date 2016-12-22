@@ -4,6 +4,38 @@
 
 FileProcess::FileProcess()
 {
+	bConvertIntoUTF8 = false;
+	nRecordStart = 11;
+		
+	nCipher = 0;
+	strCipherCfg = "conf";
+
+	strExecutePath = "NFDataCfg/";
+	strToolBasePath = "../";
+	strRelativePath = "../../";
+	strExcelStructPath = "Excel_Struct/";
+	strXMLStructPath = "Struct/Class/";
+
+	strExcelIniPath = "Excel_Ini/";
+	strXMLIniPath = "Ini/NPC/";
+
+	strLogicClassFile = "";
+	strMySQLFile = "../mysql/NFrame.sql";
+	strMySQLClassFile = "../mysql/NFClass.sql";
+
+	strProtoFile = "../proto/NFRecordDefine.proto";
+
+	strHPPFile = "../proto/NFProtocolDefine.hpp";
+	strJavaFile = "../proto/NFProtocolDefine.java";
+	strCSFile = "../proto/NFProtocolDefine.cs";
+
+	mysqlWriter = nullptr;
+	mysqlClassWriter = nullptr;
+	protoWriter = nullptr;
+	hppWriter = nullptr;
+	javaWriter = nullptr;
+	csWriter = nullptr;
+
 	strLogicClassFile = "../Struct/LogicClass.xml";
 	mysqlWriter = fopen(strMySQLFile.c_str(), "w");
 	mysqlClassWriter = fopen(strMySQLClassFile.c_str(), "w");
@@ -11,6 +43,7 @@ FileProcess::FileProcess()
 	hppWriter = fopen(strHPPFile.c_str(), "w");
 	javaWriter = fopen(strJavaFile.c_str(), "w");
 	csWriter = fopen(strCSFile.c_str(), "w");
+
 }
 
 FileProcess::~FileProcess()
@@ -135,8 +168,9 @@ void FileProcess::CreateStructThreadFunc()
 	
 	auto fileList = GetFileListInFolder(strToolBasePath + strExcelIniPath, 0);
 
-	for (auto fileName : fileList)
+	for (int i = 0; i < fileList.size(); i++)
 	{
+		auto fileName = fileList[i];
 		StringReplace(fileName, "\\", "/");
 		StringReplace(fileName, "//", "/");
 		
@@ -198,8 +232,9 @@ void FileProcess::CreateIniThreadFunc()
 {
 	
 	auto fileList = GetFileListInFolder(strToolBasePath + strExcelIniPath, 0);
-	for (auto fileName : fileList)
+	for (int i = 0; i < fileList.size(); i++)
 	{
+		auto fileName = fileList[i];
 		StringReplace(fileName, "\\", "/");
 		StringReplace(fileName, "//", "/");
 
@@ -297,8 +332,9 @@ bool FileProcess::CreateStructXML(std::string strFile, std::string strFileName)
 
 	
 	std::vector<MiniExcelReader::Sheet>& sheets = x->sheets();
-	for (MiniExcelReader::Sheet& sh : sheets)
+	for (int i = 0; i < sheets.size(); i++)
 	{
+		auto &sh = sheets[i];
 		
 		int nTitleLine = 9;
 		std::string strSheetName = sh.getName();
@@ -609,12 +645,12 @@ bool FileProcess::CreateStructXML(std::string strFile, std::string strFileName)
 					colNode->SetAttribute("Type", strType.c_str());
 					colNode->SetAttribute("Tag", strTag.c_str());
 
-					toWrite = "\t" + strTag + "\t\t= " + std::to_string(nRecordCol - 1) + "; // " + strTag + " -- " + strType + "\n";
+					toWrite = "\t" + strTag + "\t\t= " + std::to_string((long long)nRecordCol - 1) + "; // " + strTag + " -- " + strType + "\n";
 					fwrite(toWrite.c_str(), toWrite.length(), 1, protoWriter);
 
-					strHppEnumInfo += "\t\t" + strRecordName + "_" + strTag + "\t\t= " + std::to_string(nRecordCol - 1) + ", // " + strTag + " -- " + strType + "\n";
-					strJavaEnumInfo += "\t\t" + strTag + "\t\t= " + std::to_string(nRecordCol - 1) + ", // " + strTag + " -- " + strType + "\n";
-					strCSEnumInfo += "\t\t" + strTag + "\t\t= " + std::to_string(nRecordCol - 1) + ", // " + strTag + " -- " + strType + "\n";
+					strHppEnumInfo += "\t\t" + strRecordName + "_" + strTag + "\t\t= " + std::to_string((long long)nRecordCol - 1) + ", // " + strTag + " -- " + strType + "\n";
+					strJavaEnumInfo += "\t\t" + strTag + "\t\t= " + std::to_string((long long)nRecordCol - 1) + ", // " + strTag + " -- " + strType + "\n";
+					strCSEnumInfo += "\t\t" + strTag + "\t\t= " + std::to_string((long long)nRecordCol - 1) + ", // " + strTag + " -- " + strType + "\n";
 
 					nRealCols++;
 				}
@@ -706,9 +742,10 @@ bool FileProcess::CreateIniXML(std::string strFile)
 	std::vector<std::string> vDataIDs;
 	std::map<std::string, std::string> mDataValues;
 	int nCurrentCol = 0;
-
-	for (MiniExcelReader::Sheet& sh : sheets)
+	
+	for (int i = 0; i < sheets.size(); i++)
 	{
+		auto &sh = sheets[i];
 		
 		int nDataLine = 10;
 
@@ -817,12 +854,14 @@ bool FileProcess::CreateIniXML(std::string strFile)
 	{
 		int a = 0;
 	}
-	for (auto strID : vDataIDs)
+	for (int i = 0; i < vDataIDs.size(); i++)
 	{
+		auto strID = vDataIDs[i];
 		auto objectNode = iniDoc->NewElement("Object");
 		root->LinkEndChild(objectNode);
-		for (auto strColName : vColNames)
+		for (int j = 0; j < vColNames.size(); j++)
 		{
+			auto strColName = vColNames[j];
 			if (strColName == "Id")
 			{
 				const char* chrID = objectNode->Attribute("Id");

@@ -3,11 +3,94 @@
   <ItemGroup>
     <ClCompile Include="NFCNet.cpp" />
     <ClCompile Include="NFCHttpNet.cpp" />
+    <ClCompile Include="..\..\Dependencies\libevent\win32select.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\buffer.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\buffer_iocp.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\bufferevent.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\bufferevent_async.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\bufferevent_filter.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\bufferevent_pair.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\bufferevent_ratelim.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\bufferevent_sock.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\event.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\event_iocp.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\evmap.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\evthread.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\evutil.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\evutil_rand.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\listener.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\log.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\signal.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\strlcpy.c">
+      <Filter>libevent\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\http.c">
+      <Filter>libevent\extras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\evdns.c">
+      <Filter>libevent\extras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\event_tagging.c">
+      <Filter>libevent\extras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\libevent\evrpc.c">
+      <Filter>libevent\extras</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NFCNet.h" />
     <ClInclude Include="NFINet.h" />
     <ClInclude Include="NFCHttpNet.h" />
     <ClInclude Include="NFIHttpNet.h" />
+    <ClInclude Include="..\..\Dependencies\libevent\event.h">
+      <Filter>libevent\core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="libevent">
+      <UniqueIdentifier>{1453d34c-c7ff-451e-be9b-a0041b1b90a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libevent\core">
+      <UniqueIdentifier>{36473c80-16cb-4d72-be26-a6f33b29313a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libevent\extras">
+      <UniqueIdentifier>{85d4e356-27ae-4cc9-82c2-4c703192e94c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
 
 NFCalendar::NFCalendar()
 {
-	mnTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	mnTime = boost::chrono::duration_cast<boost::chrono::milliseconds>(boost::chrono::system_clock::now().time_since_epoch()).count();
 	mnTimeZone = mnDefaultTimeZone;
 }
 NFCalendar::NFCalendar(NFINT64 nTime)

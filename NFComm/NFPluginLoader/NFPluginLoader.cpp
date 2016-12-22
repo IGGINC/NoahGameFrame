@@ -28,7 +28,7 @@
 #endif
 
 bool bExitApp = false;
-std::thread gThread;
+boost::thread gThread;
 std::string strArgvList;
 std::string strPluginName;
 std::string strAppName;
@@ -85,7 +85,7 @@ void ThreadFunc()
 {
     while (!bExitApp)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(1000));
 
         std::string s;
         std::cin >> s;
@@ -99,8 +99,13 @@ void ThreadFunc()
 
 void CreateBackThread()
 {
-    gThread = std::thread(std::bind(&ThreadFunc));
+    gThread = boost::thread(std::bind(&ThreadFunc));
+	
+#if _MSC_VER < 1800
+	gThread.detach();
+#else
     auto f = std::async (std::launch::deferred, std::bind(ThreadFunc));
+#endif
     std::cout << "CreateBackThread, thread ID = " << gThread.get_id() << std::endl;
 }
 
@@ -250,7 +255,7 @@ int main(int argc, char* argv[])
     {
         while (true)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 
             if (bExitApp)
             {

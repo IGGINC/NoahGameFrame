@@ -121,6 +121,7 @@ public:
     NFCConsistentHash()
     {
         m_pHasher = new NFCHasher();
+		mnNodeCount = 500;
     }
 
     virtual ~NFCConsistentHash()
@@ -193,7 +194,7 @@ public:
 
 	virtual bool GetSuitNodeRandom(NFCVirtualNode<T>& node)
 	{
-		int nID = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		int nID = boost::chrono::duration_cast<boost::chrono::milliseconds>(boost::chrono::system_clock::now().time_since_epoch()).count();
 		return GetSuitNode(nID, node);
 	}
 
@@ -245,7 +246,7 @@ public:
 	}
 
 private:
-	int mnNodeCount = 500;
+	int mnNodeCount;
 	typename std::map<uint32_t, NFCVirtualNode<T>> mxNodes;
     NFIHasher* m_pHasher;
 };

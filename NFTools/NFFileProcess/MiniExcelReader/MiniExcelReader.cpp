@@ -178,8 +178,9 @@ namespace MiniExcelReader {
 		{
 			const char* rid = e->Attribute("Id");
 
-			for (Sheet& sheet : _sheets)
+			for (int i = 0; i < _sheets.size(); i++)
 			{
+				Sheet& sheet = _sheets[i];
 				if (sheet._rid == rid)
 				{
 					sheet._path = "xl/" + std::string(e->Attribute("Target"));
@@ -222,7 +223,8 @@ namespace MiniExcelReader {
 				while (r)
 				{
 					t = r->FirstChildElement("t");
-					value += t->GetText();
+					if(t->GetText())
+						value += t->GetText();
 					r = r->NextSiblingElement("r");
 				}
 				_sharedString.push_back(value);
@@ -254,7 +256,7 @@ namespace MiniExcelReader {
 
 		for (int i = 0; i < index; i++)
 		{
-			col += (int)(arr[i] * pow(26, index - i - 1));
+			col += (int)(arr[i] * pow(26.0f, index - i - 1));
 		}
 
 		row = atoi(value.c_str() + index);
@@ -355,8 +357,9 @@ namespace MiniExcelReader {
 		readSharedStrings("xl/sharedStrings.xml");
 		readStyles("styles.xml");
 
-		for (auto& s : _sheets)
+		for (int i = 0; i < _sheets.size(); i++)
 		{
+			Sheet &s = _sheets[i];
 			readSheet(s);
 		}
 
@@ -366,8 +369,9 @@ namespace MiniExcelReader {
 
 	Sheet* ExcelFile::getSheet(const char* name)
 	{
-		for (Sheet& sh : _sheets)
+		for (int i = 0; i < _sheets.size(); i++)
 		{
+			Sheet &sh = _sheets[i];
 			if (sh._name == name)
 				return &sh;
 		}

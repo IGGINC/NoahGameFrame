@@ -43,6 +43,8 @@
 //#ifdef _MSC_VER
 #include <windows.h>
 //#elseifdef _APPLE_
+#define ntohll(x)       (x)
+#define htonll(x)       (x)
 #elif NF_PLATFORM == NF_PLATFORM_APPLE
 #include <libkern/OSByteOrder.h>
 #else

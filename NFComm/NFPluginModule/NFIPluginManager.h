@@ -11,6 +11,8 @@
 
 #include "NFIModule.h"
 
+typedef std::function<unsigned char* (const char*, unsigned long &nSize)> GET_FILEDATA_FUNCTOR;
+
 #define FIND_MODULE(classBaseName, className)  \
 	assert((TIsDerived<classBaseName, NFIModule>::Result));
 
@@ -49,6 +51,8 @@ public:
     virtual void UnRegistered(NFIPlugin* plugin) = 0;
 
     virtual NFIPlugin* FindPlugin(const std::string& strPluginName) = 0;
+	
+    virtual void AddPlugin(const std::string& strPluginName) = 0;
 
     virtual void AddModule(const std::string& strModuleName, NFIModule* pModule) = 0;
 
@@ -70,6 +74,10 @@ public:
 
 	virtual const std::string& GetLogConfigName() const = 0;
 	virtual void SetLogConfigName(const std::string& strName) = 0;
+
+	virtual void SetGetFileDataFunctor(GET_FILEDATA_FUNCTOR fun) = 0;
+	virtual unsigned char *GetFileData(const char *pFileName, unsigned long &nSize) = 0;
+	virtual bool GetFileString(const char *pFileName, std::string &strContent) = 0;
 };
 
 #endif

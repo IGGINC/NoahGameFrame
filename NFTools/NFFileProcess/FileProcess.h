@@ -46,43 +46,43 @@ public:
 	bool LoadLogicClass(std::string strFile);
 	bool LoadClass(std::string strFile, std::string strTable);
 
-	bool bConvertIntoUTF8 = false;
+	bool bConvertIntoUTF8;
 
 private:
-	int nCipher = 0;
-	std::string strCipherCfg = "conf";
+	int nCipher;
+	std::string strCipherCfg;
 
-	std::string strExecutePath = "NFDataCfg/";
-	std::string strToolBasePath = "../";
-	std::string strRelativePath = "../../";
-	std::string strExcelStructPath = "Excel_Struct/";
-	std::string strXMLStructPath = "Struct/Class/";
+	std::string strExecutePath;
+	std::string strToolBasePath;
+	std::string strRelativePath;
+	std::string strExcelStructPath;
+	std::string strXMLStructPath;
 
-	std::string strExcelIniPath = "Excel_Ini/";
-	std::string strXMLIniPath = "Ini/NPC/";
+	std::string strExcelIniPath;
+	std::string strXMLIniPath;
 
-	std::string strLogicClassFile = "";
-	std::string strMySQLFile = "../mysql/NFrame.sql";
-	std::string strMySQLClassFile = "../mysql/NFClass.sql";
+	std::string strLogicClassFile;
+	std::string strMySQLFile;
+	std::string strMySQLClassFile;
 
-	std::string strProtoFile = "../proto/NFRecordDefine.proto";
+	std::string strProtoFile;
 
-	std::string strHPPFile = "../proto/NFProtocolDefine.hpp";
-	std::string strJavaFile = "../proto/NFProtocolDefine.java";
-	std::string strCSFile = "../proto/NFProtocolDefine.cs";
+	std::string strHPPFile;
+	std::string strJavaFile;
+	std::string strCSFile;
 
-	FILE* mysqlWriter = nullptr;
-	FILE* mysqlClassWriter = nullptr;
-	FILE* protoWriter = nullptr;
-	FILE* hppWriter = nullptr;
-	FILE* javaWriter = nullptr;
-	FILE* csWriter = nullptr;
+	FILE* mysqlWriter;
+	FILE* mysqlClassWriter;
+	FILE* protoWriter;
+	FILE* hppWriter;
+	FILE* javaWriter;
+	FILE* csWriter;
 
 	std::string strHppIObjectInfo;
 	std::string strJavaIObjectInfo;
 	std::string strCSIObjectInfo;
 
-	int nRecordStart = 11;
+	int nRecordStart;
 
 	std::vector<std::string> GetFileListInFolder(std::string folderPath, int depth)
 	{

@@ -7,6 +7,10 @@
 #include <windows.h>
 #include <io.h>
 #include <fcntl.h>
+#ifdef WIN32
+	#include <sys/stat.h>
+#endif
+
 #ifndef S_ISDIR
 #define S_ISDIR(x) (((x) & S_IFMT) == S_IFDIR)
 #endif

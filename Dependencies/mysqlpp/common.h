@@ -51,7 +51,12 @@
 #	define MYSQLPP_PLATFORM_WINDOWS
 	// Windows compiler support.  Tested with Microsoft Visual C++,
 	// Borland C++ Builder, and MinGW GCC.
-#	include <winsock.h>
+
+	// Don't let windows.h (via Connector/C) #define min/max
+	#if !defined( NOMINMAX )
+		#define NOMINMAX
+	#endif
+	
 
 	// Stuff for Visual C++ only
 #	if defined(_MSC_VER)

@@ -12,8 +12,6 @@
 #include <WS2tcpip.h>
 #include <winsock2.h>
 #pragma  comment(lib,"Ws2_32.lib")
-#pragma  comment(lib,"libevent.lib")
-#pragma  comment(lib,"libevent_core.lib")
 #elif NF_PLATFORM == NF_PLATFORM_APPLE
 #include <arpa/inet.h>
 #endif
@@ -35,16 +33,15 @@ public:
     }
     void lock()
     {
-        while (flag.test_and_set(std::memory_order_acquire));
+        while (flag.test_and_set(boost::memory_order_acquire));
     }
 
     void unlock()
     {
-        flag.clear(std::memory_order_release);
+        flag.clear(boost::memory_order_release);
     }
-
 protected:
-    mutable std::atomic_flag flag;
+    mutable boost::atomic_flag flag;
 
 private:
     NFLock& operator=(const NFLock& src);

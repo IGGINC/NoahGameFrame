@@ -56,19 +56,12 @@ bool NFCElementModule::Load()
             pLogicClass = m_pClassModule->Next();
             continue;
         }
-        //////////////////////////////////////////////////////////////////////////
-        rapidxml::xml_document<> xDoc;
-        char* pData = NULL;
-        int nDataSize = 0;
-
-        std::string strFile = pPluginManager->GetConfigPath() + strInstancePath;
-        rapidxml::file<> fdoc(strFile.c_str());
-        nDataSize = fdoc.size();
-        pData = new char[nDataSize + 1];
-        strncpy(pData, fdoc.data(), nDataSize);
-
-        pData[nDataSize] = 0;
-        xDoc.parse<0>(pData);
+		//////////////////////////////////////////////////////////////////////////
+		std::string strFile = pPluginManager->GetConfigPath() + strInstancePath;
+		std::string strData;
+		pPluginManager->GetFileString(strFile.c_str(), strData);
+		rapidxml::xml_document<> xDoc;
+		xDoc.parse<0>((char*)strData.c_str());
         //////////////////////////////////////////////////////////////////////////
         //support for unlimited layer class inherits
         rapidxml::xml_node<>* root = xDoc.first_node();
@@ -78,12 +71,6 @@ bool NFCElementModule::Load()
         }
 
         mbLoaded = true;
-        //////////////////////////////////////////////////////////////////////////
-        if (NULL != pData)
-        {
-            delete []pData;
-        }
-        //////////////////////////////////////////////////////////////////////////
         pLogicClass = m_pClassModule->Next();
     }
 
@@ -327,10 +314,12 @@ NF_SHARE_PTR<NFIRecordManager> NFCElementModule::GetRecordManager(const std::str
 
 bool NFCElementModule::LoadSceneInfo(const std::string& strFileName, const std::string& strClassName)
 {
-    rapidxml::file<> fdoc(strFileName.c_str());
-    //std::cout << fdoc.data() << std::endl;
-    rapidxml::xml_document<>  doc;
-    doc.parse<0>(fdoc.data());
+	std::string strData;
+	pPluginManager->GetFileString(strFileName.c_str(), strData);
+	rapidxml::xml_document<> xDoc;
+	xDoc.parse<0>((char*)strData.c_str());
+	rapidxml::xml_document<> doc;
+	doc.parse<0>((char*)strData.c_str());
 
     NF_SHARE_PTR<NFIClass> pLogicClass = m_pClassModule->GetElement(strClassName.c_str());
     if (pLogicClass)

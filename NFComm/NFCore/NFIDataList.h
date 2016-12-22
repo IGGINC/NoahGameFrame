@@ -283,9 +283,12 @@ public:
         NFINT64 GetInt() const
         {
             if (TDATA_INT == nType)
-            {
-                //return boost::get<NFINT64>(variantData);
-                return variantData.get<NFINT64>();
+			{
+				#if _MSC_VER < 1800
+					return boost::get<NFINT64>(variantData);
+				#else
+					return variantData.get<NFINT64>();
+				#endif
             }
 
             return NULL_INT;
@@ -295,8 +298,11 @@ public:
         {
             if (TDATA_FLOAT == nType)
             {
-                //return boost::get<double>(variantData);
-                return variantData.get<double>();
+				#if _MSC_VER < 1800
+					return boost::get<double>(variantData);
+				#else
+					return variantData.get<double>();
+				#endif
             }
 
             return NULL_FLOAT;
@@ -305,8 +311,11 @@ public:
         {
             if (TDATA_STRING == nType)
             {
-                //return boost::get<const std::string&>(variantData);
-                return variantData.get<std::string>();
+				#if _MSC_VER < 1800
+					return boost::get<const std::string>(variantData);
+				#else
+					return variantData.get<std::string>();
+				#endif;
             }
 
             return NULL_STR;
@@ -316,8 +325,11 @@ public:
         {
             if (TDATA_STRING == nType)
             {
-                //return boost::get<const std::string&>(variantData);
-                return variantData.get<std::string>().c_str();
+				#if _MSC_VER < 1800
+					return boost::get<const std::string>(variantData).c_str();
+				#else
+					return variantData.get<std::string>().c_str();
+				#endif;
             }
 
             return NULL_STR.c_str();
@@ -327,8 +339,11 @@ public:
         {
             if (TDATA_OBJECT == nType)
             {
-                //return boost::get<const NFGUID&>(variantData);
-                return variantData.get<NFGUID>();
+				#if _MSC_VER < 1800
+					return boost::get<const NFGUID>(variantData);
+				#else
+					return variantData.get<NFGUID>();
+				#endif;
             }
 
             return NULL_OBJECT;
@@ -338,7 +353,11 @@ public:
 		{
 			if (TDATA_VECTOR2 == nType)
 			{
-				return variantData.get<NFVector2>();
+				#if _MSC_VER < 1800
+					return boost::get<const NFVector2>(variantData);
+				#else
+					return variantData.get<NFVector2>();
+				#endif;
 			}
 
 			return NULL_VECTOR2;
@@ -348,7 +367,11 @@ public:
 		{
 			if (TDATA_VECTOR3 == nType)
 			{
-				return variantData.get<NFVector3>();
+				#if _MSC_VER < 1800
+					return boost::get<const NFVector3>(variantData);
+				#else
+					return variantData.get<NFVector3>();
+				#endif;
 			}
 
 			return NULL_VECTOR3;
@@ -397,7 +420,11 @@ public:
 
     public:
 		//std::variant
-        mapbox::util::variant<NFINT64, double, std::string, NFGUID, NFVector2, NFVector3> variantData;
+#if _MSC_VER < 1800
+		boost::variant<NFINT64, double, std::string, NFGUID, NFVector2, NFVector3> variantData;
+#else
+		mapbox::util::variant<NFINT64, double, std::string, NFGUID, NFVector2, NFVector3> variantData;
+#endif;
     };
 
     NFIDataList() : NFMemoryCounter(GET_CLASS_NAME(NFIDataList))

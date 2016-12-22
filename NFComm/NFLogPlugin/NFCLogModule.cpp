@@ -9,10 +9,20 @@
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 #include <stdarg.h>
 #include "NFCLogModule.h"
-#include "easylogging++.h"
 #include "NFLogPlugin.h"
 
+#if _MSC_VER < 1800
+#define _ELPP_STL_LOGGING
+#include <iostream>
+#include <windows.h>
+#include <WinSock2.h>
+#define easyloggingpp el
+#include "easylogging++c99.h"
+_INITIALIZE_EASYLOGGINGPP
+#else
+#include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
+#endif
 
 unsigned int NFCLogModule::idx = 0;
 
@@ -49,8 +59,10 @@ bool NFCLogModule::Init()
 {
     mnLogCountTotal = 0;
 
-    el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
-    el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
+#if _MSC_VER >= 1900
+	el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
+	el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
+#endif
 
 	std::string strLogConfigName = pPluginManager->GetLogConfigName();
 	if (strLogConfigName.empty())
@@ -64,13 +76,16 @@ bool NFCLogModule::Init()
     el::Configurations conf(strAppLogName);
 #else
 	strAppLogName = "logconfig/" + strLogConfigName + ".conf";
-    el::Configurations conf(strAppLogName);
+    easyloggingpp::Configurations conf(strAppLogName);
 #endif
 
 	std::cout << "LogConfig: " << strAppLogName << std::endl;
 
-    el::Loggers::reconfigureAllLoggers(conf);
+	el::Loggers::reconfigureAllLoggers(conf);
+
+#if _MSC_VER >= 1900
     el::Helpers::installPreRollOutCallback(rolloutHandler);
+#endif
 
 	////////////////////////////////////////////////////
 
@@ -79,7 +94,9 @@ bool NFCLogModule::Init()
 
 bool NFCLogModule::Shut()
 {
-    el::Helpers::uninstallPreRollOutCallback();
+#if _MSC_VER >= 1900
+	el::Helpers::uninstallPreRollOutCallback();
+#endif
 
     return true;
 }
@@ -334,14 +351,22 @@ bool NFCLogModule::LogDebugFunctionDump(const NFGUID ident, const int nMsg, cons
 
 bool NFCLogModule::ChangeLogLevel(const std::string& strLevel)
 {
-    el::Level logLevel = el::LevelHelper::convertFromString(strLevel.c_str());
+#if _MSC_VER >= 1900
+	el::Level logLevel = el::LevelHelper::convertFromString(strLevel.c_str());
+#else
+    unsigned int logLevel = el::Level::convertFromString(strLevel.c_str());
+#endif
     el::Logger* pLogger = el::Loggers::getLogger("default");
     if (NULL == pLogger)
     {
         return false;
     }
 
-    el::Configurations* pConfigurations = pLogger->configurations();
+#if _MSC_VER >= 1900
+	el::Configurations* pConfigurations = pLogger->configurations();
+#else
+	el::Configurations* pConfigurations = &pLogger->configurations();
+#endif
     if (NULL == pConfigurations)
     {
         return false;
@@ -351,23 +376,19 @@ bool NFCLogModule::ChangeLogLevel(const std::string& strLevel)
     {
         case el::Level::Fatal:
         {
-            el::Configuration errorConfiguration(el::Level::Error, el::ConfigurationType::Enabled, "false");
-            pConfigurations->set(&errorConfiguration);
+            pConfigurations->set(el::Level::Error, el::ConfigurationType::Enabled, "false");
         }
         case el::Level::Error:
         {
-            el::Configuration warnConfiguration(el::Level::Warning, el::ConfigurationType::Enabled, "false");
-            pConfigurations->set(&warnConfiguration);
+            pConfigurations->set(el::Level::Warning, el::ConfigurationType::Enabled, "false");
         }
         case el::Level::Warning:
         {
-            el::Configuration infoConfiguration(el::Level::Info, el::ConfigurationType::Enabled, "false");
-            pConfigurations->set(&infoConfiguration);
+            pConfigurations->set(el::Level::Info, el::ConfigurationType::Enabled, "false");
         }
         case el::Level::Info:
         {
-            el::Configuration debugConfiguration(el::Level::Debug, el::ConfigurationType::Enabled, "false");
-            pConfigurations->set(&debugConfiguration);
+            pConfigurations->set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
 
         }
         case el::Level::Debug:
@@ -376,7 +397,7 @@ bool NFCLogModule::ChangeLogLevel(const std::string& strLevel)
             break;
     }
 
-    el::Loggers::reconfigureAllLoggers(*pConfigurations);
+	el::Loggers::reconfigureAllLoggers(*pConfigurations);
     LogNormal(NFILogModule::NLL_INFO_NORMAL, NFGUID(), "[Log] Change log level", strLevel, __FUNCTION__, __LINE__);
     return true;
 }

@@ -235,19 +235,11 @@ bool NFCClassModule::AddClassInclude(const char* pstrClassFilePath, NF_SHARE_PTR
     }
 
     //////////////////////////////////////////////////////////////////////////
-    rapidxml::xml_document<> xDoc;
-    char* pData = NULL;
-    int nDataSize = 0;
-
     std::string strFile = pPluginManager->GetConfigPath() + pstrClassFilePath;
-	rapidxml::file<> fdoc(strFile.c_str());
-	nDataSize = fdoc.size();
-	pData = new char[nDataSize + 1];
-	strncpy(pData, fdoc.data(), nDataSize);
-
-
-    pData[nDataSize] = 0;
-    xDoc.parse<0>(pData);
+	std::string strData;
+	pPluginManager->GetFileString(strFile.c_str(), strData);
+    rapidxml::xml_document<> xDoc;
+    xDoc.parse<0>((char*)strData.c_str());
     //////////////////////////////////////////////////////////////////////////
 
     //support for unlimited layer class inherits
@@ -289,13 +281,6 @@ bool NFCClassModule::AddClassInclude(const char* pstrClassFilePath, NF_SHARE_PTR
             }
         }
     }
-
-    //////////////////////////////////////////////////////////////////////////
-    if (NULL != pData)
-    {
-        delete []pData;
-    }
-    //////////////////////////////////////////////////////////////////////////
 
     return true;
 }
@@ -391,19 +376,11 @@ bool NFCClassModule::Load(rapidxml::xml_node<>* attrNode, NF_SHARE_PTR<NFIClass>
 bool NFCClassModule::Load()
 {
     //////////////////////////////////////////////////////////////////////////
+    std::string strFile = pPluginManager->GetConfigPath() + msConfigFileName;	
+	std::string strData;
+	pPluginManager->GetFileString(strFile.c_str(), strData);
     rapidxml::xml_document<> xDoc;
-    char* pData = NULL;
-    int nDataSize = 0;
-
-    std::string strFile = pPluginManager->GetConfigPath() + msConfigFileName;
-
-	rapidxml::file<> fdoc(strFile.c_str());
-	nDataSize = fdoc.size();
-	pData = new char[nDataSize + 1];
-	strncpy(pData, fdoc.data(), nDataSize);
-  
-    pData[nDataSize] = 0;
-    xDoc.parse<0>(pData);
+    xDoc.parse<0>((char*)strData.c_str());
     //////////////////////////////////////////////////////////////////////////
     //support for unlimited layer class inherits
     rapidxml::xml_node<>* root = xDoc.first_node();
@@ -411,13 +388,6 @@ bool NFCClassModule::Load()
     {
         Load(attrNode, NULL);
     }
-
-    //////////////////////////////////////////////////////////////////////////
-    if (NULL != pData)
-    {
-        delete []pData;
-    }
-    //////////////////////////////////////////////////////////////////////////
     return true;
 }
 
