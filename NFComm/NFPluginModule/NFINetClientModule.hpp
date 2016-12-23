@@ -470,6 +470,25 @@ private:
 
 				mxServerMap.AddElement(xInfo.nGameID, xServerData);
             }
+			else
+			{
+				xServerData->nGameID = xInfo.nGameID;
+				xServerData->eServerType = xInfo.eServerType;
+				xServerData->strIP = xInfo.strIP;
+				xServerData->strName = xInfo.strName;
+				xServerData->eState = ConnectDataState::CONNECTING;
+				xServerData->nPort = xInfo.nPort;
+				xServerData->mnLastActionTime = GetPluginManager()->GetNowTime();
+
+				if (nullptr != xServerData->mxNetModule)
+				{
+					xServerData->mxNetModule = nullptr;
+				}
+
+				xServerData->eState = ConnectDataState::CONNECTING;
+				xServerData->mxNetModule = NF_SHARE_PTR<NFINetModule>(NF_NEW NFINetModule(pPluginManager));
+				xServerData->mxNetModule->Initialization(xServerData->strIP.c_str(), xServerData->nPort);
+			}
         }
 
         mxTempNetList.clear();

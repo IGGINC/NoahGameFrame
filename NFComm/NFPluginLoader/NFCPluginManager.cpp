@@ -179,18 +179,19 @@ void NFCPluginManager::Registered(NFIPlugin* plugin)
     std::string strPluginName = plugin->GetPluginName();
     if (!FindPlugin(strPluginName))
     {
-        bool bFind = false;
-        PluginNameMap::iterator it = mPluginNameMap.begin();
-        for (it; it != mPluginNameMap.end(); ++it)
-        {
-            if (strPluginName == it->first)
-            {
-                bFind = true;
-                break;
-            }
-        }
+		// 无需检测是否有这个插件名字 因为有部分插件是通过 静态方式添加的 而不是dll
+        //bool bFind = false;
+        //PluginNameMap::iterator it = mPluginNameMap.begin();
+        //for (it; it != mPluginNameMap.end(); ++it)
+        //{
+        //    if (strPluginName == it->first)
+        //    {
+        //        bFind = true;
+        //        break;
+        //    }
+        //}
 
-        if (bFind)
+        //if (bFind)
         {
             mPluginInstanceMap.insert(PluginInstanceMap::value_type(strPluginName, plugin));
             plugin->Install();
