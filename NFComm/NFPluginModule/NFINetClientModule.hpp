@@ -488,6 +488,8 @@ private:
 				xServerData->eState = ConnectDataState::CONNECTING;
 				xServerData->mxNetModule = NF_SHARE_PTR<NFINetModule>(NF_NEW NFINetModule(pPluginManager));
 				xServerData->mxNetModule->Initialization(xServerData->strIP.c_str(), xServerData->nPort);
+
+				InitCallBacks(xServerData);
 			}
         }
 
